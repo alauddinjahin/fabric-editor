@@ -1,4 +1,4 @@
-import * as fabric from "fabric"; // import fabric to use fabric types
+import * as fabric from "fabric"; 
 
 export interface State {
   shapes: any[]; 
@@ -6,7 +6,7 @@ export interface State {
   index: number;
 }
 
-// Define Action Types
+
 export type Action =
   | { type: "ADD_SHAPE"; shape: fabric.Rect | fabric.Circle }
   | { type: "DELETE_SHAPE"; id: string }
@@ -14,4 +14,4 @@ export type Action =
   | { type: "REDO" }
   | { type: "CLEAR_ALL" }
   | { type: "LOAD"; shapes: (fabric.Rect | fabric.Circle)[] }
-  | { type: "UPDATE_SHAPE"; shape: fabric.Object & { data?: { id: string } } };
+  | { type: "UPDATE_SHAPE"; shape: fabric.Object & { data?: { id: string } }; cb?: any | null };

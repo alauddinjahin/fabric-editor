@@ -1,6 +1,7 @@
 import { Action, State } from "@/types/types";
 
 const reducer = (state: State, action: Action): State => {
+  
     switch (action.type) {
       case "ADD_SHAPE": {
         const newShapes = [...state.shapes, action.shape];
@@ -11,8 +12,11 @@ const reducer = (state: State, action: Action): State => {
           index: state.index + 1,
         };
       }
-  
+
       case "DELETE_SHAPE": {
+        const deletedShape = state.shapes.find((shape) => shape.data?.id === action.id);
+        if (!deletedShape) return state;
+      
         const filteredShapes = state.shapes.filter((shape) => shape.data?.id !== action.id);
         return {
           ...state,
@@ -26,13 +30,21 @@ const reducer = (state: State, action: Action): State => {
         const updatedShapes = state.shapes.map((shape) =>
           shape.data?.id === action.shape.data?.id ? action.shape : shape
         );
+
+        
+        if(action?.cb) {
+          action.cb(updatedShapes)
+        }
+
         return {
           ...state,
           shapes: updatedShapes,
           history: [...state.history.slice(0, state.index + 1), updatedShapes],
           index: state.index + 1,
         };
+
       }
+      
   
       case "UNDO":
         if (state.index > 0) {
@@ -45,6 +57,7 @@ const reducer = (state: State, action: Action): State => {
         return state;
   
       case "REDO":
+
         if (state.index < state.history.length - 1) {
           return {
             ...state,
@@ -58,7 +71,12 @@ const reducer = (state: State, action: Action): State => {
         return { shapes: [], history: [[]], index: 0 };
   
       case "LOAD":
-        return { shapes: action.shapes, history: [action.shapes], index: 0 };
+        return {
+          ...state,
+          index: 0,
+          shapes: action.shapes,
+          history: [action.shapes]
+        };
   
       default:
         return state;

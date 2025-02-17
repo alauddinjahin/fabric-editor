@@ -22,25 +22,40 @@ class CanvasEditor {
 
   }
 
+  private getId(id=null){
+    return id || String(Date.now());
+  }
+
   private addCanvasEvents() {
-    // Add event listener for modified shapes
     this.canvas.on("object:modified", (e: any) => {
       const updatedShape = e.target;
       if (updatedShape && updatedShape.data) {
-        this.dispatch({ type: "UPDATE_SHAPE", shape: updatedShape });
-        this.saveCanvas(this.state.shapes); 
+        this.dispatch({ type: "UPDATE_SHAPE", shape: updatedShape, cb: this.saveCanvas });
       }
     });
   }
+  
 
   private loadCanvas() {
     const savedData = localStorage.getItem("canvasData");
     if (savedData) {
       const loadedShapes = JSON.parse(savedData).map((obj: any) =>
-        obj.type === "rect" ? new fabric.Rect(obj) : new fabric.Circle(obj)
+        obj.type === "Rect" ? new fabric.Rect(obj) : new fabric.Circle(obj)
       );
+
       this.dispatch({ type: "LOAD", shapes: loadedShapes });
+      this.updateCanvas(this.getShapes(loadedShapes))
     }
+  }
+
+  private getShapes(shapes:any[]=[]){
+    return {
+      ...this.state,
+      index: 0,
+      shapes: shapes,
+      history: [shapes]
+    };
+
   }
 
   private addCircle(shapeColor="red"){
@@ -49,7 +64,7 @@ class CanvasEditor {
         top: 50,
         radius: 50,
         fill: shapeColor,
-        data: { id: String(Date.now()) },
+        data: { id: this.getId() },
         hasControls: true,
     });
   }
@@ -61,7 +76,7 @@ class CanvasEditor {
         width: 100,
         height: 100,
         fill: shapeColor,
-        data: { id: String(Date.now()) },
+        data: { id: this.getId() },
         hasControls: true,
     });
   }
@@ -100,8 +115,10 @@ class CanvasEditor {
     this.canvas.clear();
   }
 
-  private saveCanvas(shapes: (fabric.Rect | fabric.Circle)[]) {
-    localStorage.setItem("canvasData", JSON.stringify(shapes.map((s) => s.toObject())));
+  private saveCanvas(shapes: any[]) {
+    localStorage.setItem("canvasData", JSON.stringify(shapes.map((s) => {
+      return {...s.toObject(), data: s?.data || null}
+    })));
   }
 
   public downloadCanvas() {
@@ -111,10 +128,13 @@ class CanvasEditor {
     link.download = "design.png";
     link.click();
   }
-
-  // Sync shapes on canvas update
-  public updateCanvas() {
+  
+  public updateCanvas(state:State|null = null) {
     this.canvas.clear();
+    if(state !== null) this.state = state
+
+    const updatedShapes:any = [];
+
     this.state.shapes.forEach((shape) => {
       const existingShape = this.canvas.getObjects().find((obj) => (obj as any).data?.id === shape.data?.id);
 
@@ -130,12 +150,16 @@ class CanvasEditor {
           fabricShape = new fabric.Circle(shapeObj as fabric.TOptions<fabric.CircleProps>);
         }
 
-        fabricShape.set({ data: { id: shape.data?.id || String(Date.now()) } });
+        fabricShape.set({ data: { id: this.getId(shape.data?.id) } });
+
+        updatedShapes.push(fabricShape);
         this.canvas.add(fabricShape);
       }
     });
 
     this.canvas.renderAll();
+
+    this.saveCanvas(updatedShapes)
   }
 }
 
