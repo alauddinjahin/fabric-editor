@@ -24,9 +24,9 @@ A simple design editor that allows users to select, customize, move, and resize 
 
 ### Prerequisites
 Ensure that you have the following tools installed on your system:
-- **Git** Please setup git in your machine
-- **Node.js** (version 14 or higher)
-- **npm** or **yarn** (Node package manager)
+- **Git** : Please setup git in your machine
+- **Node.js** : (version 14 or higher)
+- **npm** or **yarn** : (Node package manager)
 
 ### Steps to Install & Run the Project Locally
 
