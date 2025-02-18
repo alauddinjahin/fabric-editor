@@ -2,6 +2,9 @@
 
 A simple design editor that allows users to select, customize, move, and resize shapes on a canvas. The design editor also supports saving designs in LocalStorage, reloading saved designs, and exporting the canvas as a PNG file.
 
+## Overview:
+[<img src="./public/image.png" alt="Overview" width="600" height="500"/>]()
+
 ## Features
 
 ### Minimum Features:
