@@ -40,9 +40,9 @@ interface ArtBoradStyles {
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'url(lightblue.JPG)',
-        backgroundSize: 'contain',
-        filter: 'blur(10px)', 
+        background: 'url(green-bg.jpg)',
+        backgroundSize: 'conver',
+        filter: 'blur(50px)', 
         zIndex: -1, 
     }
   };
